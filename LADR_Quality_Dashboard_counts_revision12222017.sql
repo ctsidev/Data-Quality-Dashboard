@@ -243,27 +243,27 @@ LEFT JOIN DASH_ONTOLOGY ont20 on dash.c_name_level20 = ont20.C_FULLNAME;
 -----------------------------------------------------------------------
 --	CONFIRM COUNTS AND QA OUTPUT
 -----------------------------------------------------------------------
-SELECT COUNT(*) FROM DASH__ONT_NODES;                     --416058
-SELECT COUNT(DISTINCT ONT_ID) FROM DASH__ONT_NODES;       --415998
-SELECT * FROM DASH__ONT_NODES;
+SELECT COUNT(*) FROM DASH_ONT_NODES;                     --416058
+SELECT COUNT(DISTINCT ONT_ID) FROM DASH_ONT_NODES;       --415998
+SELECT * FROM DASH_ONT_NODES;
 
-SELECT COUNT(*) FROM DASH__ONT_NODES WHERE ont_id_level17 IS NOT NULL;                     --2
-SELECT COUNT(*) FROM DASH__ONT_NODES WHERE ont_id_level16 IS NOT NULL;                     --9
-SELECT COUNT(*) FROM DASH__ONT_NODES WHERE ont_id_level15 IS NOT NULL;                     --24
-SELECT COUNT(*) FROM DASH__ONT_NODES WHERE ont_id_level14 IS NOT NULL;                     --85
-SELECT COUNT(*) FROM DASH__ONT_NODES WHERE ont_id_level13 IS NOT NULL;                     --200
-SELECT COUNT(*) FROM DASH__ONT_NODES WHERE ont_id_level12 IS NOT NULL;                     --552
-SELECT COUNT(*) FROM DASH__ONT_NODES WHERE ont_id_level11 IS NOT NULL;                     --1621
-SELECT COUNT(*) FROM DASH__ONT_NODES WHERE ont_id_level10 IS NOT NULL;                     --5926 
-SELECT COUNT(*) FROM DASH__ONT_NODES WHERE ont_id_level9 IS NOT NULL;                      --126257
-SELECT COUNT(*) FROM DASH__ONT_NODES WHERE ont_id_level8 IS NOT NULL;                      --235433
-SELECT COUNT(*) FROM DASH__ONT_NODES WHERE ont_id_level7 IS NOT NULL;                      --331955
-SELECT COUNT(*) FROM DASH__ONT_NODES WHERE ont_id_level6 IS NOT NULL;                      --387552
-SELECT COUNT(*) FROM DASH__ONT_NODES WHERE ont_id_level5 IS NOT NULL;                      --408069
-SELECT COUNT(*) FROM DASH__ONT_NODES WHERE ont_id_level4 IS NOT NULL;                      --414967
-SELECT COUNT(*) FROM DASH__ONT_NODES WHERE ont_id_level3 IS NOT NULL;                      --415986
-SELECT COUNT(*) FROM DASH__ONT_NODES WHERE ont_id_level2 IS NOT NULL;                      --416050
-SELECT COUNT(*) FROM DASH__ONT_NODES WHERE ont_id_level1 IS NOT NULL;                      --416058
+SELECT COUNT(*) FROM DASH_ONT_NODES WHERE ont_id_level17 IS NOT NULL;                     --2
+SELECT COUNT(*) FROM DASH_ONT_NODES WHERE ont_id_level16 IS NOT NULL;                     --9
+SELECT COUNT(*) FROM DASH_ONT_NODES WHERE ont_id_level15 IS NOT NULL;                     --24
+SELECT COUNT(*) FROM DASH_ONT_NODES WHERE ont_id_level14 IS NOT NULL;                     --85
+SELECT COUNT(*) FROM DASH_ONT_NODES WHERE ont_id_level13 IS NOT NULL;                     --200
+SELECT COUNT(*) FROM DASH_ONT_NODES WHERE ont_id_level12 IS NOT NULL;                     --552
+SELECT COUNT(*) FROM DASH_ONT_NODES WHERE ont_id_level11 IS NOT NULL;                     --1621
+SELECT COUNT(*) FROM DASH_ONT_NODES WHERE ont_id_level10 IS NOT NULL;                     --5926 
+SELECT COUNT(*) FROM DASH_ONT_NODES WHERE ont_id_level9 IS NOT NULL;                      --126257
+SELECT COUNT(*) FROM DASH_ONT_NODES WHERE ont_id_level8 IS NOT NULL;                      --235433
+SELECT COUNT(*) FROM DASH_ONT_NODES WHERE ont_id_level7 IS NOT NULL;                      --331955
+SELECT COUNT(*) FROM DASH_ONT_NODES WHERE ont_id_level6 IS NOT NULL;                      --387552
+SELECT COUNT(*) FROM DASH_ONT_NODES WHERE ont_id_level5 IS NOT NULL;                      --408069
+SELECT COUNT(*) FROM DASH_ONT_NODES WHERE ont_id_level4 IS NOT NULL;                      --414967
+SELECT COUNT(*) FROM DASH_ONT_NODES WHERE ont_id_level3 IS NOT NULL;                      --415986
+SELECT COUNT(*) FROM DASH_ONT_NODES WHERE ont_id_level2 IS NOT NULL;                      --416050
+SELECT COUNT(*) FROM DASH_ONT_NODES WHERE ont_id_level1 IS NOT NULL;                      --416058
 
 
 
