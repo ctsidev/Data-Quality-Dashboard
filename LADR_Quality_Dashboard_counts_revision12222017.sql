@@ -525,14 +525,14 @@ JOIN <Metadata schema>.DASH_ONT_NODES       NOD ON OB.ont_ID = NOD.ONT_ID;commit
   DROP TABLE DASH_VISIT PURGE;
   CREATE TABLE DASH_VISIT
    (	ONT_ID NUMBER, 
-	OBSERVATION_YEAR NUMBER, 
+	ONT_YEAR  NUMBER, 
 	PATIENT_NUM NUMBER
    );
 --------------------------------------------------------------------------------------------------
 -- Step 6.2: Dynamic query generation to calculate age for each patient and pairing it to the corresponding ONTOLOGY_ID
 --			 Run this query from <Metadata schema>. Replace <CRC schema> accordingly to match your environment.
 --------------------------------------------------------------------------------------------------
-SELECT 'INSERT INTO DASH_VISIT SELECT ' || '''' || ont.ont_id || '''' || ' as ont_id, EXTRACT(YEAR FROM start_date) AS observation_year, patient_num 
+SELECT 'INSERT INTO DASH_VISIT SELECT ' || '''' || ont.ont_id || '''' || ' as ont_id, EXTRACT(YEAR FROM start_date) AS ONT_YEAR , patient_num 
 FROM <CRCData schema>.visit_dimension WHERE ' || ont.c_columnname || ' '  || ont.c_operator ||' ' || ont.c_dimcode || '; COMMIT;' as query_to_run
 FROM ladr_DASH_ONTOLOGY         ont
 JOIN ladr_DASH_ONT_NODES     NOD ON ONT.ont_ID = NOD.ONT_ID
@@ -563,7 +563,7 @@ FROM I2B2_visit_dimension WHERE inout_cd = 'OA'; COMMIT;
 INSERT INTO DASH_OBSERVATION
 SELECT DISTINCT
   OB.PATIENT_NUM,
-  extract(YEAR FROM ob.OBSERVATION_YEAR) AS ONT_YEAR,
+  ob.ONT_YEAR,
   NOD.ont_ID,
   NOD.ONT_ID_LEVEL1,
   NOD.ONT_ID_LEVEL2,
