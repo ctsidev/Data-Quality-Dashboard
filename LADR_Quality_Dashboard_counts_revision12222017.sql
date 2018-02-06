@@ -692,18 +692,18 @@ FROM (
 --			Assigning year '8888' allows to separate this year from the others during data manipulation
 --			Run this query from <Metadata schema>. Replace <CRC schema> accordingly to match your environment. Do the same with <Site Acronym>
 --------------------------------------------------------------------------------------------------		
-insert into LADR_DASH_UCLA
+insert into DASH_<Site Acronym>
 	SELECT 
 		8888 as ONT_YEAR,
 		ont.ONT_ID as ONT_ID,
 		NVL(COUNT(DISTINCT PATIENT_NUM),null)  AS PATIENT_COUNT,
 		NVL(COUNT(ob.ont_id),null)             AS TOTAL_OBSERVATIONS,
 		SYSDATE AS UPDATE_DATE
-	FROM LADR_DASH_ONTOLOGY   ont
-    LEFT JOIN LADR_DASH_OBSERVATION ob ON ont.ont_id = ob.ont_id
+	FROM DASH_ONTOLOGY   ont
+    	LEFT JOIN DASH_OBSERVATION ob ON ont.ont_id = ob.ont_id
 		GROUP BY ont.ONT_ID;
 		COMMIT;
-select count(*) from LADR_DASH_UCLA   ; --     1020953
+select count(*) from DASH_<Site Acronym>   ; --     1020953
 --415,998 rows inserted.
 		    --415,962 rows inserted.
 /* ************************************************************************************************
