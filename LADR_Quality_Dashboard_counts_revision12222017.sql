@@ -533,7 +533,7 @@ JOIN <Metadata schema>.DASH_ONT_NODES       NOD ON OB.ont_ID = NOD.ONT_ID;commit
 --			 Run this query from <Metadata schema>. Replace <CRC schema> accordingly to match your environment.
 --------------------------------------------------------------------------------------------------
 SELECT 'INSERT INTO DASH_VISIT SELECT ' || '''' || ont.ont_id || '''' || ' as ont_id, EXTRACT(YEAR FROM start_date) AS ONT_YEAR , patient_num 
-FROM <CRCData schema>.visit_dimension WHERE ' || ont.c_columnname || ' '  || ont.c_operator ||' ' || ont.c_dimcode || '; COMMIT;' as query_to_run
+FROM <CRCData schema>.visit_dimension WHERE ' || ont.c_columnname || ' '  || ont.c_operator ||' ' || '''' || ont.c_dimcode || '''' ||'; COMMIT;' as query_to_run
 FROM ladr_DASH_ONTOLOGY         ont
 JOIN ladr_DASH_ONT_NODES     NOD ON ONT.ont_ID = NOD.ONT_ID
 WHERE 
