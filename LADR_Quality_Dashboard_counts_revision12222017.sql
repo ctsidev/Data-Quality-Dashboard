@@ -176,8 +176,8 @@ FROM DASH_ONTOLOGY dash
 -----------------------------------------------------------------------
 --	CONFIRM COUNTS AND QA OUTPUT
 -----------------------------------------------------------------------
-SELECT COUNT(*) FROM  DASH_ONT_NODES_temp;                    --415,962
-SELECT COUNT(DISTINCT ONT_ID) FROM  DASH_ONT_NODES_temp;      --415,962
+SELECT COUNT(*) FROM  DASH_ONT_NODES_temp;                    --415,998
+SELECT COUNT(DISTINCT ONT_ID) FROM  DASH_ONT_NODES_temp;      --415,998
 SELECT * FROM  DASH_ONT_NODES_temp;
 
 
@@ -243,7 +243,7 @@ LEFT JOIN DASH_ONTOLOGY ont20 on dash.c_name_level20 = ont20.C_FULLNAME;
 -----------------------------------------------------------------------
 --	CONFIRM COUNTS AND QA OUTPUT
 -----------------------------------------------------------------------
-SELECT COUNT(*) FROM DASH_ONT_NODES;                     --416058
+SELECT COUNT(*) FROM DASH_ONT_NODES;                     --416038
 SELECT COUNT(DISTINCT ONT_ID) FROM DASH_ONT_NODES;       --415998
 SELECT * FROM DASH_ONT_NODES;
 
@@ -331,7 +331,6 @@ SELECT COUNT(*) FROM DASH_OBSERVATION;    --437,363,157
 grant SELECT on <CRCData schema>."PATIENT_DIMENSION" to <Metadata schema>;
 --grant SELECT on "LADR_CRCDATA_1_7_04"."PATIENT_DIMENSION" to "UCREX_METADATA_1_7_04";		--example at UCLA
 
-
 SELECT 'INSERT INTO DASH_OBSERVATION SELECT 
   OB.PATIENT_NUM,
   EXTRACT(YEAR FROM SYSDATE) AS ONT_YEAR,
@@ -357,11 +356,13 @@ SELECT 'INSERT INTO DASH_OBSERVATION SELECT
   NOD.ONT_ID_LEVEL19,
   NOD.ONT_ID_LEVEL20
 FROM <CRCData schema>.PATIENT_DIMENSION     OB
-JOIN DASH_ONTOLOGY      ONT ON OB.' || c_columnname || '  = ONT.c_name
-JOIN DASH_ONT_NODES     NOD ON ONT.ont_ID = NOD.ONT_ID
-where ont.c_columnname = ''' ||c_columnname || '''; commit;'  
+, DASH_ONTOLOGY      ONT 
+JOIN DASH_ONT_NODES     NOD ON ONT.ont_ID = NOD.ONT_ID 
+where ob.' ||c_columnname || ' ' || c_operator || ' ' || c_dimcode || ' and  ont.ONT_ID = ' || ONT_ID || '; commit;'  
 FROM (
-		SELECT DISTINCT c_columnname 
+		SELECT DISTINCT c_columnname, c_operator--, c_dimcode
+                ,case when c_operator = '=' then '''' || c_dimcode || '''' else c_dimcode end c_dimcode
+                ,ONT_ID
 		FROM DASH_ONTOLOGY 
 		WHERE c_columnname IN ('language_cd','religion_cd','marital_status_cd','race_cd','sex_cd')
 	);
@@ -387,34 +388,34 @@ FROM (
 
 /* this is an example of one of the queries being generated
 ----------------------------------------------------------------------------------------------------------------------------------
-INSERT INTO DASH_OBSERVATION SELECT  
-  OB.PATIENT_NUM, 
-  EXTRACT(YEAR FROM SYSDATE) AS ONT_YEAR, 
-  ONT.ID, 
-  NOD.ONT_ID_LEVEL1, 
-  NOD.ONT_ID_LEVEL2, 
-  NOD.ONT_ID_LEVEL3, 
-  NOD.ONT_ID_LEVEL4, 
-  NOD.ONT_ID_LEVEL5, 
-  NOD.ONT_ID_LEVEL6, 
-  NOD.ONT_ID_LEVEL7, 
-  NOD.ONT_ID_LEVEL8, 
-  NOD.ONT_ID_LEVEL9, 
-  NOD.ONT_ID_LEVEL10, 
-  NOD.ONT_ID_LEVEL11, 
-  NOD.ONT_ID_LEVEL12, 
-  NOD.ONT_ID_LEVEL13, 
-  NOD.ONT_ID_LEVEL14, 
-  NOD.ONT_ID_LEVEL15, 
-  NOD.ONT_ID_LEVEL16, 
-  NOD.ONT_ID_LEVEL17, 
+"INSERT INTO DASH_OBSERVATION SELECT 
+  OB.PATIENT_NUM,
+  EXTRACT(YEAR FROM SYSDATE) AS ONT_YEAR,
+  ONT.ONT_ID,
+  NOD.ONT_ID_LEVEL1,
+  NOD.ONT_ID_LEVEL2,
+  NOD.ONT_ID_LEVEL3,
+  NOD.ONT_ID_LEVEL4,
+  NOD.ONT_ID_LEVEL5,
+  NOD.ONT_ID_LEVEL6,
+  NOD.ONT_ID_LEVEL7,
+  NOD.ONT_ID_LEVEL8,
+  NOD.ONT_ID_LEVEL9,
+  NOD.ONT_ID_LEVEL10,
+  NOD.ONT_ID_LEVEL11,
+  NOD.ONT_ID_LEVEL12,
+  NOD.ONT_ID_LEVEL13,
+  NOD.ONT_ID_LEVEL14,
+  NOD.ONT_ID_LEVEL15,
+  NOD.ONT_ID_LEVEL16,
+  NOD.ONT_ID_LEVEL17,
   NOD.ONT_ID_LEVEL18,
   NOD.ONT_ID_LEVEL19,
   NOD.ONT_ID_LEVEL20
-FROM <CRCData schema>.PATIENT_DIMENSION     OB 
-JOIN DASH_ONTOLOGY      ONT ON OB.language_cd  = ONT.c_name 
-JOIN DASH_ONT_NODES     NOD ON ONT.ID = NOD.ONT_ID 
-where ont.c_columnname = 'language_cd';
+FROM <CRCData schema>.PATIENT_DIMENSION     OB
+, DASH_ONTOLOGY      ONT 
+JOIN DASH_ONT_NODES     NOD ON ONT.ont_ID = NOD.ONT_ID 
+where ob.language_cd = 'Norwegian' and  ont.ONT_ID = 94; commit;"
 ----------------------------------------------------------------------------------------------------------------------------------
 */
 
@@ -503,7 +504,7 @@ SELECT DISTINCT
   NOD.ONT_ID_LEVEL19,
   NOD.ONT_ID_LEVEL20
 FROM DASH_AGE             OB
-JOIN <Metadata schema>.DASH_ONT_NODES       NOD ON OB.ont_ID = NOD.ONT_ID;commit;
+JOIN DASH_ONT_NODES       NOD ON OB.ont_ID = NOD.ONT_ID;commit;
 --4,223,704 rows inserted.
    
 
@@ -533,12 +534,16 @@ JOIN <Metadata schema>.DASH_ONT_NODES       NOD ON OB.ont_ID = NOD.ONT_ID;commit
 --			 Run this query from <Metadata schema>. Replace <CRC schema> accordingly to match your environment.
 --------------------------------------------------------------------------------------------------
 SELECT 'INSERT INTO DASH_VISIT SELECT ' || '''' || ont.ont_id || '''' || ' as ont_id, EXTRACT(YEAR FROM start_date) AS ONT_YEAR , patient_num 
-FROM <CRCData schema>.visit_dimension WHERE ' || ont.c_columnname || ' '  || ont.c_operator ||' ' || '''' || ont.c_dimcode || '''' ||'; COMMIT;' as query_to_run
-FROM ladr_DASH_ONTOLOGY         ont
-JOIN ladr_DASH_ONT_NODES     NOD ON ONT.ont_ID = NOD.ONT_ID
-WHERE 
-		C_TABLENAME = 'visit_dimension'
-		AND C_VISUALATTRIBUTES = 'LA';
+FROM <CRCData schema>.visit_dimension WHERE ' || ont.c_columnname || ' '  || ont.c_operator ||' ' || ont.c_dimcode  ||'; COMMIT;' as query_to_run
+FROM (SELECT DISTINCT c_columnname, c_operator--, c_dimcode
+                ,case when c_operator = '=' then '''' || c_dimcode || '''' else c_dimcode end c_dimcode
+                ,ONT_ID
+		FROM DASH_ONTOLOGY
+        WHERE   C_TABLENAME = 'visit_dimension'
+                AND C_VISUALATTRIBUTES = 'LA')         ont
+JOIN DASH_ONT_NODES     NOD ON ONT.ont_ID = NOD.ONT_ID
+; 
+		
 -------------------------------------------------------------------------------------------------- 
 -- Step 6.3: Generate entries per patient and per visit detail item
 --			 Run this query from <Metadata schema> 
@@ -620,7 +625,7 @@ SELECT 'insert into DASH_<Site acronym>
 		COUNT(DISTINCT PATIENT_NUM)  AS PATIENT_COUNT,
 		COUNT(*)                     AS TOTAL_OBSERVATIONS,
 		SYSDATE AS UPDATE_DATE
-		FROM <Metadata schema>.DASH_OBSERVATION
+		FROM DASH_OBSERVATION
 		WHERE ONT_ID_LEVEL' || C_HLEVEL || ' IS NOT NULL
 		GROUP BY ONT_YEAR,ONT_ID_LEVEL' || C_HLEVEL || '; COMMIT;' 
 FROM (
@@ -662,7 +667,7 @@ SELECT 'insert into DASH_<Site Acronym>
 		COUNT(DISTINCT PATIENT_NUM)  AS PATIENT_COUNT,
 		COUNT(*)                     AS TOTAL_OBSERVATIONS,
 		SYSDATE AS UPDATE_DATE
-		FROM <CRCData schema>.DASH_OBSERVATION
+		FROM DASH_OBSERVATION
 		WHERE ONT_ID_LEVEL' || C_HLEVEL || ' IS NOT NULL
 		GROUP BY ONT_ID_LEVEL' || C_HLEVEL || '; COMMIT;' 
 FROM (
@@ -678,7 +683,7 @@ FROM (
 				COUNT(DISTINCT PATIENT_NUM)  AS PATIENT_COUNT,
 				COUNT(*)                     AS TOTAL_OBSERVATIONS,
 				SYSDATE AS UPDATE_DATE
-		FROM LADR_METADATA_1_7_04.DASH_OBSERVATION
+		FROM DASH_OBSERVATION
 		WHERE ONT_ID_LEVEL1 IS NOT NULL
 		GROUP BY ONT_ID_LEVEL1; COMMIT;"
 

@@ -343,7 +343,7 @@ SELECT COUNT(*) FROM DASH_OBSERVATION;    --8625369
 --Run this on <CRCData schema>
 --grant SELECT on <CRCData schema>."PATIENT_DIMENSION" to <Metadata schema>;
 --grant SELECT on "LADR_CRCDATA_1_7_04"."PATIENT_DIMENSION" to "UCREX_METADATA_1_7_04";		--example at UCLA
-
+'
 
 SELECT 'INSERT INTO DASH_OBSERVATION SELECT 
   OB.PATIENT_NUM,
@@ -370,14 +370,16 @@ SELECT 'INSERT INTO DASH_OBSERVATION SELECT
   NOD.ONT_ID_LEVEL19,
   NOD.ONT_ID_LEVEL20
 FROM <CRC data schema>.dbo.PATIENT_DIMENSION     OB
-JOIN DASH_ONTOLOGY      ONT ON OB.' + c_columnname + '  = ONT.c_name
+, DASH_ONTOLOGY      ONT 
 JOIN DASH_ONT_NODES     NOD ON ONT.ont_ID = NOD.ONT_ID
-where ont.c_columnname = ''' +c_columnname + ''';'  
+where ob.' + c_columnname + ' ' + c_operator + ' ' + c_dimcode  ' AND ont.ont_id = ' + ont_id + ';'
 FROM (
-		SELECT DISTINCT c_columnname 
+		SELECT DISTINCT c_columnname, c_operator
+						,CASE WHEN c_operator = '=' THEN '' + c_dimcode + '' ELSE c_dimcode END c_dimcode
+						,ont_id
 		FROM DASH_ONTOLOGY 
 		WHERE c_columnname IN ('language_cd','religion_cd','marital_status_cd','race_cd','sex_cd')
-	) A;
+	) ont;
 
 --0 rows inserted.		--language_cd
 --0 rows inserted.		--religion_cd
@@ -550,11 +552,14 @@ JOIN DASH_ONT_NODES       NOD ON OB.ont_ID = NOD.ONT_ID;
 --------------------------------------------------------------------------------------------------
 SELECT 'INSERT INTO DASH_VISIT SELECT ' + '''' + CAST(ont.ont_id AS VARCHAR(20)) + '''' + ' as ont_id, YEAR(start_date) AS observation_year, patient_num 
 FROM <CRC data schema>.dbo.visit_dimension WHERE ' + ont.c_columnname + ' '  + ont.c_operator +' ' + ont.c_dimcode + ';' as query_to_run
-FROM DASH_ONTOLOGY         ont
+FROM (SELECT DISTINCT c_columnname, c_operator--, c_dimcode
+                ,CASE WHEN c_operator = '=' THEN '' + c_dimcode + '' ELSE c_dimcode END c_dimcode
+				,ONT_ID
+		FROM DASH_ONTOLOGY
+        WHERE   C_TABLENAME = 'visit_dimension'
+                AND C_VISUALATTRIBUTES = 'LA')         ont
 JOIN DASH_ONT_NODES     NOD ON ONT.ont_ID = NOD.ONT_ID
-WHERE 
-		C_TABLENAME = 'visit_dimension'
-		AND C_VISUALATTRIBUTES = 'LA';
+;
 -------------------------------------------------------------------------------------------------- 
 -- Step 6.3: Generate entries per patient and per visit detail item
 --			 Run this query from <Metadata schema> 
