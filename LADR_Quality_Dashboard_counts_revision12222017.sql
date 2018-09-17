@@ -362,6 +362,7 @@ where ob.' ||c_columnname || ' ' || c_operator || ' ' || c_dimcode || ' and  ont
 FROM (
 		SELECT DISTINCT c_columnname, c_operator--, c_dimcode
                 ,case when c_operator = '=' then '''' || c_dimcode || '''' else c_dimcode end c_dimcode
+	              when c_operator in ('!=','IS NOT') AND C_DIMCODE IS NULL THEN 'NULL'  else c_dimcode
                 ,ONT_ID
 		FROM DASH_ONTOLOGY 
 		WHERE c_columnname IN ('language_cd','religion_cd','marital_status_cd','race_cd','sex_cd')
