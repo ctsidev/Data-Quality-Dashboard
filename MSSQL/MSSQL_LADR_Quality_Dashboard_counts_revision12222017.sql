@@ -375,8 +375,10 @@ JOIN DASH_ONT_NODES     NOD ON ONT.ont_ID = NOD.ONT_ID
 where ob.' + c_columnname + ' ' + c_operator + ' ' + c_dimcode  ' AND ont.ont_id = ' + ont_id + ';'
 FROM (
 		SELECT DISTINCT c_columnname, c_operator
-						,CASE WHEN c_operator = '=' THEN '' + c_dimcode + '' ELSE c_dimcode END c_dimcode
-						,ont_id
+						,CASE WHEN c_operator = '=' THEN '' + c_dimcode + '' 
+						      WHEN c_operator IN ('!=','IS NOT') AND c_dimcode IS NULL THEN 'NULL'  ELSE c_dimcode
+						END c_dimcode
+	,ont_id
 		FROM DASH_ONTOLOGY 
 		WHERE c_columnname IN ('language_cd','religion_cd','marital_status_cd','race_cd','sex_cd')
 	) ont;
